@@ -1,0 +1,33 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4A19A4CA-58C8-4EE5-94BA-B2D2F2DD68EE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8165327B-8AB8-4B19-8AC0-9251BFDC1BDC}"
+	ProjectSection(SolutionItems) = preProject
+		global.json = global.json
+		NuGet.Config = NuGet.Config
+	EndProjectSection
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "TokenAuthExampleWebApplication", "src\TokenAuthExampleWebApplication\TokenAuthExampleWebApplication.xproj", "{F6B6DAA2-0460-419E-88D7-CE887777F469}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F6B6DAA2-0460-419E-88D7-CE887777F469}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6B6DAA2-0460-419E-88D7-CE887777F469}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6B6DAA2-0460-419E-88D7-CE887777F469}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6B6DAA2-0460-419E-88D7-CE887777F469}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F6B6DAA2-0460-419E-88D7-CE887777F469} = {4A19A4CA-58C8-4EE5-94BA-B2D2F2DD68EE}
+	EndGlobalSection
+EndGlobal

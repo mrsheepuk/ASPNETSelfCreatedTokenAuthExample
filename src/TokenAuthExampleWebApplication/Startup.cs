@@ -45,8 +45,12 @@ namespace TokenAuthExampleWebApplication
             // Add the signing credentials so we can access them in the controller that doles out the tokens.
             services.AddInstance(new SigningCredentials(key, SecurityAlgorithms.RsaSha256Signature, SecurityAlgorithms.Sha256Digest));
 
-            // Configure the bearer token validation to use the supplied key, and validate the lifetime and signature when a 
-            // key is supplied.
+            // Configure the bearer token validation to use the supplied key, and validate the 
+            // lifetime and signature when a key is supplied.
+            // *** 
+            // NOTE: OAuthBearerAuthentication will be renamed to JwtBearerAuthentication in 
+            // ASP.NET 5 Beta 8 - be ready to change this then!! 
+            // ***
             services.Configure<OAuthBearerAuthenticationOptions>(bearer =>
             {
                 // Basic settings - signing key to validate with, audience and issuer.
@@ -115,6 +119,10 @@ namespace TokenAuthExampleWebApplication
                 }));
             });
 
+            // *** 
+            // NOTE: OAuthBearerAuthentication will be renamed to JwtBearerAuthentication in 
+            // ASP.NET 5 Beta 8 - be ready to change this then!! 
+            // ***
             app.UseOAuthBearerAuthentication();
 
             // Configure the HTTP request pipeline.

@@ -1,25 +1,26 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Authentication.OAuthBearer;
 using System.IdentityModel.Tokens;
 using System.Security.Claims;
 using Microsoft.AspNet.Authorization;
 using Microsoft.Framework.OptionsModel;
 using System.Security.Principal;
+using Microsoft.AspNet.Authentication.JwtBearer;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace TokenAuthExampleWebApplication.Controllers
 {
     [Route("api/[controller]")]
     public class TokenController : Controller
     {
-        private readonly OAuthBearerAuthenticationOptions bearerOptions;
-        private readonly SigningCredentials signingCredentials;
+        private readonly TokenAuthOptions tokenOptions;
 
-        public TokenController(IOptions<OAuthBearerAuthenticationOptions> options, SigningCredentials signingCredentials)
+        public TokenController(TokenAuthOptions tokenOptions)
         {
-            this.bearerOptions = options.Options;
-            this.signingCredentials = signingCredentials;
+            this.tokenOptions = tokenOptions;
+            //this.bearerOptions = options.Value;
+            //this.signingCredentials = signingCredentials;
         }
 
         /// <summary>
@@ -38,7 +39,7 @@ namespace TokenAuthExampleWebApplication.Controllers
             string token = null;
             DateTime? tokenExpires = default(DateTime?);
 
-            var currentUser = Context.User;
+            var currentUser = HttpContext.User;
             if (currentUser != null)
             {
                 authenticated = currentUser.Identity.IsAuthenticated;
@@ -79,17 +80,16 @@ namespace TokenAuthExampleWebApplication.Controllers
 
         private string GetToken(string user, DateTime? expires)
         {
-            var handler = bearerOptions.SecurityTokenValidators.OfType<System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler>()
-                .First();
+            var handler = new JwtSecurityTokenHandler();
 
             // Here, you should create or look up an identity for the user which is being authenticated.
             // For now, just creating a simple generic identity.
             ClaimsIdentity identity = new ClaimsIdentity(new GenericIdentity(user, "TokenAuth"), new[] { new Claim("EntityID", "1", ClaimValueTypes.Integer) });
 
             var securityToken = handler.CreateToken(
-                issuer: bearerOptions.TokenValidationParameters.ValidIssuer,
-                audience: bearerOptions.TokenValidationParameters.ValidAudience,
-                signingCredentials: signingCredentials,
+                issuer: tokenOptions.Issuer,
+                audience: tokenOptions.Audience,
+                signingCredentials: tokenOptions.SigningCredentials,
                 subject: identity,
                 expires: expires
                 );

@@ -1,5 +1,5 @@
 # ASP.NET Self-created token authentication example
-A simple example of how to protect an ASP.NET 5 / MVC 6 (working against beta 8 as of 19/10/2015) project using simple self-created JWT bearer tokens for local username/password checking.
+A simple example of how to protect an ASP.NET 5 / MVC 6 (working against beta 8 as of 19/10/2015 - see the beta7 branch if you're looking for beta7 still) project using simple self-created JWT bearer tokens for local username/password checking.
 
 **DO NOT USE IN PRODUCTION**
 

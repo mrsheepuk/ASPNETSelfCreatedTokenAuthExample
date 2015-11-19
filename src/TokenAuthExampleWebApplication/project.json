@@ -1,16 +1,15 @@
 {
-  "webroot": "wwwroot",
   "version": "1.0.0-*",
 
   "dependencies": {
-    "Microsoft.AspNet.Authentication.JwtBearer": "1.0.0-beta8",
-    "Microsoft.AspNet.Diagnostics": "1.0.0-beta8",
-    "Microsoft.AspNet.IISPlatformHandler": "1.0.0-beta8",
-    "Microsoft.AspNet.Mvc": "6.0.0-beta8",
-    "Microsoft.AspNet.Server.Kestrel": "1.0.0-beta8",
-    "Microsoft.AspNet.StaticFiles": "1.0.0-beta8",
-    "System.IdentityModel.Tokens": "5.0.0-beta8-208241120",
-    "System.IdentityModel.Tokens.Jwt": "5.0.0-beta8-208241120"
+    "Microsoft.AspNet.Authentication.JwtBearer": "1.0.0-rc1-final",
+    "Microsoft.AspNet.Diagnostics": "1.0.0-rc1-final",
+    "Microsoft.AspNet.IISPlatformHandler": "1.0.0-rc1-final",
+    "Microsoft.AspNet.Mvc": "6.0.0-rc1-final",
+    "Microsoft.AspNet.Server.Kestrel": "1.0.0-rc1-final",
+    "Microsoft.AspNet.StaticFiles": "1.0.0-rc1-final",
+    "System.IdentityModel.Tokens": "5.0.0-rc1-208241120",
+    "System.IdentityModel.Tokens.Jwt": "5.0.0-rc1-208241120"
   },
 
   "commands": {

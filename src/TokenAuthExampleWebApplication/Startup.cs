@@ -3,13 +3,12 @@ using System.IdentityModel.Tokens;
 using Microsoft.AspNet.Authentication.JwtBearer;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Hosting;
-using Microsoft.Framework.DependencyInjection;
 using System.Security.Cryptography;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Diagnostics;
 using Newtonsoft.Json;
 using Microsoft.AspNet.Http;
-using System.IO;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace TokenAuthExampleWebApplication
 {
@@ -44,8 +43,7 @@ namespace TokenAuthExampleWebApplication
             {
                 Audience = TokenAudience,
                 Issuer = TokenIssuer,
-                SigningCredentials = new SigningCredentials(key, 
-                    SecurityAlgorithms.RsaSha256Signature, SecurityAlgorithms.Sha256Digest)
+                SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.RsaSha256Signature)
             };
 
             // Save the token options into an instance so they're accessible to the 
@@ -129,5 +127,7 @@ namespace TokenAuthExampleWebApplication
             // Add MVC to the request pipeline.
             app.UseMvc();
         }
+
+        public static void Main(string[] args) => WebApplication.Run(args);
     }
 }

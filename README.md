@@ -9,4 +9,4 @@ This example is to show the principles required to acheive local token authentic
 2. The error handling is very simple - and may leak application info to the end users as it returns the exception message.
 3. The username and password checking using an "if" statement should be replaced with checking against some sort of repository, and identities generated from that.
 
-You can find more information about the principles in [my StackOverflow answer here](http://stackoverflow.com/a/33217122/789529). This strategyis based on [this StackOverflow answer](http://stackoverflow.com/a/29698502/789529) to the same question by @mdekrey, updated for the RC1 and rationalised to be a slightly simpler, complete example.
+You can find more information about the principles in [my StackOverflow answer here](http://stackoverflow.com/a/33217122/789529). This strategy is based on [this StackOverflow answer](http://stackoverflow.com/a/29698502/789529) to the same question by @mdekrey, updated for the RC1 and rationalised to be a slightly simpler, complete example.

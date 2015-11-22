@@ -9,6 +9,8 @@ using Microsoft.AspNet.Diagnostics;
 using Newtonsoft.Json;
 using Microsoft.AspNet.Http;
 using Microsoft.Extensions.DependencyInjection;
+using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 
 namespace TokenAuthExampleWebApplication
 {
@@ -16,7 +18,7 @@ namespace TokenAuthExampleWebApplication
     {
         const string TokenAudience = "ExampleAudience";
         const string TokenIssuer = "ExampleIssuer";
-        private RsaSecurityKey key;
+        public const string KeyContainerName = "TokenAuthExample";
         private TokenAuthOptions tokenOptions;
 
         public Startup(IHostingEnvironment env)
@@ -25,25 +27,13 @@ namespace TokenAuthExampleWebApplication
 
         public void ConfigureServices(IServiceCollection services)
         {
-            // *** CHANGE THIS FOR PRODUCTION USE ***
-            // Here, we're generating a random key to sign tokens - obviously this means
-            // that each time the app is started the key will change, and multiple servers 
-            // all have different keys. This should be changed to load a key from a file 
-            // securely delivered to your application, controlled by configuration.
-            //
-            // See the RSAKeyUtils.GetKeyParameters method for an examle of loading from
-            // a JSON file.
-            RSAParameters keyParams = RSAKeyUtils.GetRandomKey();
-
-            // Create the key, and a set of token options to record signing credentials 
-            // using that key, along with the other parameters we will need in the 
-            // token controlller.
-            key = new RsaSecurityKey(keyParams);
+            // Prepare some common options that we'll need for both signing and checking
+            // the tokens.
             tokenOptions = new TokenAuthOptions()
             {
                 Audience = TokenAudience,
                 Issuer = TokenIssuer,
-                SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.RsaSha256Signature)
+                KeyContainerParams = new CspParameters() { KeyContainerName = KeyContainerName }
             };
 
             // Save the token options into an instance so they're accessible to the 
@@ -103,8 +93,18 @@ namespace TokenAuthExampleWebApplication
 
             app.UseJwtBearerAuthentication(options =>
             {
-                // Basic settings - signing key to validate with, audience and issuer.
-                options.TokenValidationParameters.IssuerSigningKey = key;
+                // Basic settings - retrieve the key to validate the data with, and set the expected 
+                // audience and issuer.
+                options.TokenValidationParameters.IssuerSigningKeyResolver = (token, securityToken, kid, validationParameters) =>
+                {
+                    // Load the key from the RSA crypto service provider using our configured
+                    // key container params, so as to retrieve the same key we've used to sign 
+                    // the token in TokenController.
+                    using (RSACryptoServiceProvider rsaCsp = new RSACryptoServiceProvider(2048, tokenOptions.KeyContainerParams))
+                    {
+                        return new SecurityKey[] { new RsaSecurityKey(rsaCsp.ExportParameters(true)) };
+                    }
+                };
                 options.TokenValidationParameters.ValidAudience = tokenOptions.Audience;
                 options.TokenValidationParameters.ValidIssuer = tokenOptions.Issuer;
 

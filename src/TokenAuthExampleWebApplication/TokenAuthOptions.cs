@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IdentityModel.Tokens;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 
 namespace TokenAuthExampleWebApplication
@@ -10,6 +11,6 @@ namespace TokenAuthExampleWebApplication
     {
         public string Audience { get; set; }
         public string Issuer { get; set; }
-        public SigningCredentials SigningCredentials { get; set; }
+        public CspParameters KeyContainerParams { get; set; }
     }
 }

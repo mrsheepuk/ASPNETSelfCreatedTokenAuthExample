@@ -10,27 +10,52 @@ namespace TokenAuthExampleWebApplication
 {
     public class RSAKeyUtils
     {
-        public static RSAParameters GetRandomKey()
+        /// <summary>
+        /// Generate a new (or retrieve an existing) key from the container named keyContainerName. If 
+        /// jsonKeyExportFile is not null, the key will be persisted to this file from where it can be 
+        /// imported on another machine using RSAKeyUtils.ImportKeyAndStoreInCSP.
+        /// </summary>
+        /// <param name="keyContainerName"></param>
+        /// <param name="jsonKeyExportFile"></param>
+        public static void GenerateKey(string keyContainerName, string jsonKeyExportFile = null)
         {
-            using (var rsa = new RSACryptoServiceProvider(2048))
+            using (RSACryptoServiceProvider rsaCsp = new RSACryptoServiceProvider(2048, new CspParameters() { KeyContainerName = keyContainerName }))
             {
-                try
-                {
-                    return rsa.ExportParameters(true);
-                }
-                finally
-                {
-                    rsa.PersistKeyInCsp = false;
+                RSAParameters p = rsaCsp.ExportParameters(true);
+                if (jsonKeyExportFile != null ) {
+                    RSAParametersWithPrivate t = new RSAParametersWithPrivate();
+                    t.SetParameters(p);
+                    File.WriteAllText(jsonKeyExportFile, JsonConvert.SerializeObject(t));
                 }
             }
         }
 
-        public static void GenerateKeyAndSave(string file)
+        /// <summary>
+        /// Imports the key from jsonKeyFile into the container named keyContainerName. Use this
+        /// to import a key on another machine which has been generated using the GenerateKey 
+        /// method above with the optional jsonKeyExportFile specified.
+        /// </summary>
+        /// <param name="keyContainerName"></param>
+        /// <param name="jsonKeyFile"></param>
+        public static void ImportKeyAndStoreInCSP(string keyContainerName, string jsonKeyFile)
         {
-            var p = GetRandomKey();
-            RSAParametersWithPrivate t = new RSAParametersWithPrivate();
-            t.SetParameters(p);
-            File.WriteAllText(file, JsonConvert.SerializeObject(t));
+            RSAParameters p = GetKeyParameters(jsonKeyFile);
+            using (RSACryptoServiceProvider rsaCsp = new RSACryptoServiceProvider(2048, new CspParameters() { KeyContainerName = keyContainerName }))
+            {
+                rsaCsp.ImportParameters(p);
+            }
+        }
+
+        /// <summary>
+        /// Removes any and all keys from the container named keyContainerName
+        /// </summary>
+        /// <param name="keyContainerName"></param>
+        public static void ClearSavedKey(string keyContainerName)
+        {
+            using (RSACryptoServiceProvider rsaCsp = new RSACryptoServiceProvider(2048, new CspParameters() { KeyContainerName = keyContainerName }))
+            {
+                rsaCsp.PersistKeyInCsp = false;
+            }
         }
 
         /// <summary>

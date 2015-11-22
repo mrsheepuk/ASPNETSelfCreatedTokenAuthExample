@@ -7,6 +7,7 @@ using Microsoft.AspNet.Authorization;
 using System.Security.Principal;
 using Microsoft.AspNet.Authentication.JwtBearer;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Cryptography;
 
 namespace TokenAuthExampleWebApplication.Controllers
 {
@@ -85,14 +86,28 @@ namespace TokenAuthExampleWebApplication.Controllers
             // For now, just creating a simple generic identity.
             ClaimsIdentity identity = new ClaimsIdentity(new GenericIdentity(user, "TokenAuth"), new[] { new Claim("EntityID", "1", ClaimValueTypes.Integer) });
 
-            var securityToken = handler.CreateToken(
-                issuer: tokenOptions.Issuer,
-                audience: tokenOptions.Audience,
-                signingCredentials: tokenOptions.SigningCredentials,
-                subject: identity,
-                expires: expires
+            // Use the KeyContainerParams from our token options, this ensures that we retrieve
+            // the same keys both here and in the token validator configured in Startup.
+            using (var rsaCsp = new System.Security.Cryptography.RSACryptoServiceProvider(2048, tokenOptions.KeyContainerParams))
+            {
+                // Create signing credentials from the current RSA key provided by the 
+                // crypto service provider.
+                var signingCreds = new SigningCredentials(
+                    new RsaSecurityKey(rsaCsp.ExportParameters(true)), 
+                    SecurityAlgorithms.RsaSha256Signature);
+
+                // Generate the token using these signing credentials.
+                var securityToken = handler.CreateToken(
+                    issuer: tokenOptions.Issuer,
+                    audience: tokenOptions.Audience,
+                    signingCredentials: signingCreds,
+                    subject: identity,
+                    expires: expires
                 );
-            return handler.WriteToken(securityToken);
+
+                // Write the token as a json string.
+                return handler.WriteToken(securityToken);
+            }
         }
     }
 }

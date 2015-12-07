@@ -32,6 +32,19 @@ namespace TokenAuthExampleWebApplication.Controllers
         [Authorize("Bearer")]
         public dynamic Get()
         {
+            /* 
+            ******* WARNING WARNING WARNING ****** 
+            ******* WARNING WARNING WARNING ****** 
+            ******* WARNING WARNING WARNING ****** 
+            THIS METHOD SHOULD BE REMOVED IN PRODUCTION USE-CASES - IT ALLOWS A USER WITH 
+            A VALID TOKEN TO REMAIN LOGGED IN FOREVER, WITH NO WAY OF EVER EXPIRING THEIR
+            RIGHT TO USE THE APPLICATION.
+            Refresh Tokens (see https://auth0.com/docs/refresh-token) should be used to 
+            retrieve new tokens. 
+            ******* WARNING WARNING WARNING ****** 
+            ******* WARNING WARNING WARNING ****** 
+            ******* WARNING WARNING WARNING ****** 
+            */
             bool authenticated = false;
             string user = null;
             int entityId = -1;

@@ -1,14 +1,16 @@
 ﻿using System;
-using System.IdentityModel.Tokens;
-using Microsoft.AspNet.Authentication.JwtBearer;
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Hosting;
 using System.Security.Cryptography;
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Diagnostics;
 using Newtonsoft.Json;
-using Microsoft.AspNet.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http;
 
 namespace TokenAuthExampleWebApplication
 {
@@ -19,8 +21,17 @@ namespace TokenAuthExampleWebApplication
         private RsaSecurityKey key;
         private TokenAuthOptions tokenOptions;
 
+        public IConfigurationRoot Configuration { get; }
+
         public Startup(IHostingEnvironment env)
         {
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddEnvironmentVariables();
+
+            Configuration = builder.Build();
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -48,7 +59,7 @@ namespace TokenAuthExampleWebApplication
 
             // Save the token options into an instance so they're accessible to the 
             // controller.
-            services.AddInstance<TokenAuthOptions>(tokenOptions);
+            services.AddSingleton<TokenAuthOptions>(tokenOptions);
 
             // Enable the use of an [Authorize("Bearer")] attribute on methods and classes to protect.
             services.AddAuthorization(auth =>
@@ -61,9 +72,10 @@ namespace TokenAuthExampleWebApplication
             services.AddMvc();
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            app.UseIISPlatformHandler();
+            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+            loggerFactory.AddDebug();
 
             // Register a simple error handler to catch token expiries and change them to a 401, 
             // and return all other errors as a 500. This should almost certainly be improved for
@@ -101,24 +113,26 @@ namespace TokenAuthExampleWebApplication
                 });
             });
 
-            app.UseJwtBearerAuthentication(options =>
-            {
-                // Basic settings - signing key to validate with, audience and issuer.
-                options.TokenValidationParameters.IssuerSigningKey = key;
-                options.TokenValidationParameters.ValidAudience = tokenOptions.Audience;
-                options.TokenValidationParameters.ValidIssuer = tokenOptions.Issuer;
 
-                // When receiving a token, check that we've signed it.
-                options.TokenValidationParameters.ValidateSignature = true;
+            app.UseJwtBearerAuthentication(new JwtBearerOptions {
+                TokenValidationParameters = new TokenValidationParameters
+                {
+                    IssuerSigningKey = key,
+                    ValidAudience = tokenOptions.Audience,
+                    ValidIssuer = tokenOptions.Issuer,
 
-                // When receiving a token, check that it is still valid.
-                options.TokenValidationParameters.ValidateLifetime = true;
+                    // When receiving a token, check that we've signed it.
+                    //ValidateSignature = true,
 
-                // This defines the maximum allowable clock skew - i.e. provides a tolerance on the token expiry time 
-                // when validating the lifetime. As we're creating the tokens locally and validating them on the same 
-                // machines which should have synchronised time, this can be set to zero. Where external tokens are
-                // used, some leeway here could be useful.
-                options.TokenValidationParameters.ClockSkew = TimeSpan.FromMinutes(0);
+                    // When receiving a token, check that it is still valid.
+                    ValidateLifetime = true,
+
+                    // This defines the maximum allowable clock skew - i.e. provides a tolerance on the token expiry time 
+                    // when validating the lifetime. As we're creating the tokens locally and validating them on the same 
+                    // machines which should have synchronised time, this can be set to zero. Where external tokens are
+                    // used, some leeway here could be useful.
+                    ClockSkew = TimeSpan.FromMinutes(0)
+                }
             });
 
             // Configure the HTTP request pipeline.
@@ -127,7 +141,5 @@ namespace TokenAuthExampleWebApplication
             // Add MVC to the request pipeline.
             app.UseMvc();
         }
-
-        public static void Main(string[] args) => WebApplication.Run(args);
     }
 }

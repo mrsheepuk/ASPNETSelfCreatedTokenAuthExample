@@ -121,9 +121,6 @@ namespace TokenAuthExampleWebApplication
                     ValidAudience = tokenOptions.Audience,
                     ValidIssuer = tokenOptions.Issuer,
 
-                    // When receiving a token, check that we've signed it.
-                    //ValidateSignature = true,
-
                     // When receiving a token, check that it is still valid.
                     ValidateLifetime = true,
 

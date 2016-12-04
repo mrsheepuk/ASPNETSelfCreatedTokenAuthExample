@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Linq;
-using Microsoft.AspNet.Mvc;
 using System.IdentityModel.Tokens;
 using System.Security.Claims;
-using Microsoft.AspNet.Authorization;
 using System.Security.Principal;
-using Microsoft.AspNet.Authentication.JwtBearer;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TokenAuthExampleWebApplication.Controllers
 {
@@ -36,10 +35,12 @@ namespace TokenAuthExampleWebApplication.Controllers
             ******* WARNING WARNING WARNING ****** 
             ******* WARNING WARNING WARNING ****** 
             ******* WARNING WARNING WARNING ****** 
-            THIS METHOD SHOULD BE REMOVED IN PRODUCTION USE-CASES - IT ALLOWS A USER WITH 
-            A VALID TOKEN TO REMAIN LOGGED IN FOREVER, WITH NO WAY OF EVER EXPIRING THEIR
-            RIGHT TO USE THE APPLICATION.
-            Refresh Tokens (see https://auth0.com/docs/refresh-token) should be used to 
+            THIS METHOD ALLOWS A USER WITH A VALID TOKEN TO REMAIN LOGGED IN 
+            FOREVER, WITH NO WAY OF EVER EXPIRING THEIR RIGHT TO USE THE 
+            APPLICATION. Consider whether this is appropriate for your 
+            application's needs.
+
+            Refresh Tokens (see https://auth0.com/docs/refresh-token) could be used to 
             retrieve new tokens. 
             ******* WARNING WARNING WARNING ****** 
             ******* WARNING WARNING WARNING ****** 
@@ -98,13 +99,13 @@ namespace TokenAuthExampleWebApplication.Controllers
             // For now, just creating a simple generic identity.
             ClaimsIdentity identity = new ClaimsIdentity(new GenericIdentity(user, "TokenAuth"), new[] { new Claim("EntityID", "1", ClaimValueTypes.Integer) });
 
-            var securityToken = handler.CreateToken(
-                issuer: tokenOptions.Issuer,
-                audience: tokenOptions.Audience,
-                signingCredentials: tokenOptions.SigningCredentials,
-                subject: identity,
-                expires: expires
-                );
+            var securityToken = handler.CreateToken(new Microsoft.IdentityModel.Tokens.SecurityTokenDescriptor() {
+                Issuer = tokenOptions.Issuer,
+                Audience = tokenOptions.Audience,
+                SigningCredentials = tokenOptions.SigningCredentials,
+                Subject = identity,
+                Expires = expires
+            });
             return handler.WriteToken(securityToken);
         }
     }

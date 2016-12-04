@@ -1,5 +1,5 @@
-# ASP.NET Self-created token authentication example
-A simple example of how to protect an ASP.NET 5 / MVC 6 project using simple self-created JWT bearer tokens for local username/password checking. Working against RC1 as of 19/11/2015 - see the beta8 and beta7 branches if you're using older framework versions.
+# ASP.NET Core Self-created token authentication example
+A simple example of how to protect an ASP.NET Core Web API project using simple self-created JWT bearer tokens for local username/password checking. Working against dotnet core 1.0.1 as of 04/12/2016 - see the rc1, beta8 and beta7 branches if you're using older framework versions.
 
 **DO NOT USE AS-IS IN PRODUCTION**
 
@@ -10,4 +10,4 @@ This example is to show the principles required to acheive local token authentic
 3. The username and password checking using an "if" statement should be replaced with checking against some sort of repository, and identities generated from that.
 4. Consider whether the token refresh strategy (the TokenController Get action) is appropriate for your application - [this StackOverflow question and answer may help you decide what is best for your application](http://stackoverflow.com/questions/26739167/jwt-json-web-token-automatic-prolongation-of-expiration)
 
-You can find more information about the principles in [my StackOverflow answer here](http://stackoverflow.com/a/33217122/789529). This strategy is based on [this StackOverflow answer](http://stackoverflow.com/a/29698502/789529) to the same question by @mdekrey, updated for the RC1 and rationalised to be a slightly simpler, complete example.
+You can find more information about the principles in [my StackOverflow answer here](http://stackoverflow.com/a/33217122/789529). This strategy is based on [this StackOverflow answer](http://stackoverflow.com/a/29698502/789529) to the same question by @mdekrey, updated for ASP.NET Core 1.0.1 and rationalised to be a slightly simpler, complete example.

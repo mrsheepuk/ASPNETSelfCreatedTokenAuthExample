@@ -22,7 +22,7 @@ namespace TokenAuthExampleWebApplication.Controllers
         }
 
         /// <summary>
-        /// Check if currently authenticated. Will throw an exception of some sort which shoudl be caught by a general
+        /// Check if currently authenticated. Will throw an exception of some sort which should be caught by a general
         /// exception handler and returned to the user as a 401, if not authenticated. Will return a fresh token if
         /// the user is authenticated, which will reset the expiry.
         /// </summary>

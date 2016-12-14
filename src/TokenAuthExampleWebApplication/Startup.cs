@@ -113,7 +113,8 @@ namespace TokenAuthExampleWebApplication
                 });
             });
 
-
+            // Note, it is VITAL that this is added BEFORE app.UseMvc() is called.
+            // See https://github.com/mrsheepuk/ASPNETSelfCreatedTokenAuthExample/issues/11
             app.UseJwtBearerAuthentication(new JwtBearerOptions {
                 TokenValidationParameters = new TokenValidationParameters
                 {
